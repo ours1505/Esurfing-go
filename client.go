@@ -130,6 +130,10 @@ func (c *Client) Start() {
 }
 
 func (c *Client) SendHeartbeat() error {
+	if c.KeepUrl == "" {
+		return errors.New("keep url is empty, auth may have failed")
+	}
+
 	stateXML, err := c.GenerateStateXML()
 	if err != nil {
 		return errors.New(err.Error())
@@ -154,7 +158,7 @@ func (c *Client) SendHeartbeat() error {
 func (c *Client) Logout() {
 	request, _ := c.NewGetRequest("http://connect.rom.miui.com/generate_204")
 	resp, _ := c.HttpClient.Do(request)
-	if resp.StatusCode == http.StatusNoContent && c.cipher != nil {
+	if resp != nil && resp.StatusCode == http.StatusNoContent && c.cipher != nil {
 		stateXML, _ := c.GenerateStateXML()
 		_, _ = c.PostXMLWithTimeout(c.TermUrl, stateXML)
 		c.Log.Println("log out request sent")
