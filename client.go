@@ -58,9 +58,12 @@ func NewClient(config *Config) (*Client, error) {
 
 	rid := GenerateRandomString(5)
 
-	if config.BindInterface == "" {
-		config.BindInterface = "sys_default"
+	// 保存用于日志显示的接口名称
+	bindInterfaceDisplay := config.BindInterface
+	if bindInterfaceDisplay == "" {
+		bindInterfaceDisplay = "sys_default"
 	}
+
 	if config.CheckInterval <= 0 {
 		config.CheckInterval = 10000
 	}
@@ -84,7 +87,7 @@ func NewClient(config *Config) (*Client, error) {
 		AlgoID: "00000000-0000-0000-0000-000000000000",
 		Log: log.New(
 			os.Stdout,
-			"["+rid+"][user:"+config.Username+" bind_device:"+config.BindInterface+"] ",
+			"["+rid+"][user:"+config.Username+" bind_device:"+bindInterfaceDisplay+"] ",
 			log.LstdFlags|log.Lmsgprefix,
 		),
 		heartBeatTicker: time.NewTicker(time.Duration(math.MaxInt32)),
